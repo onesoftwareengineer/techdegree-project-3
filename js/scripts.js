@@ -191,26 +191,57 @@ $('select#payment').on('change', function(){
 //At least one checkbox under "Register for Activities" section must be selected.
 //Email field contains validly formatted e-mail address: (doesn’t have to check that it's a real e-mail address, just that it's formatted like one: dave@teamtreehouse.com, for example).
 //If "Credit Card" is the selected payment option, the three fields accept only numbers: a 13 to 16-digit credit card number, a 5-digit zip code, and 3-number CVV value.
+// On submission, the form provides an error indication or message for each field that requires validation:
+// Name field
+// Email field
+// “Register for Activities” checkboxes
+// Credit Card number, Zip code, and CVV, only if the credit card payment method is selected.
 $('form').on('submit', function (event) { 
-    const $nameIsValid = $('input#name').val(); //name field isn't blank
-    const $emailIsValid = bestEmailRegex.test( $('#mail').val() ); //email is valid
-    const $cardIsValid = //card fields are valid valid
-        /^\d{13}\d?\d?\d?$/.test( $('#cc-num').val().replace(/\s+/g,'') ) && //checks if credit card has between 13 and 16 digits, to do that all spaces are also removed 
-        /^\d{5}$/.test( $('#zip').val() ) && //checks if zip field has 5 digits
-        /^\d{3}$/.test( $('#cvv').val() ); //checks if cvv has 3 digits    
-    const $activityIsSelected = $totalPrice !== 0; //at least one activity is checked, that means that total price is different from zero
-    const $formIsValid = $nameIsValid && $emailIsValid && $cardIsValid && $activityIsSelected;
+    
+    //check if name field isn't blank
+    const $nameIsValid = $('input#name').val(); 
+    if( !$nameIsValid ) {
+        $('input#name').css('border-color','red');
+    }
+
+    //email is valid
+    const $emailIsValid = bestEmailRegex.test( $('#mail').val() ); 
+    if( !$emailIsValid ) {
+        $('#mail').css('border-color','red');
+    }
+        
+    //checks if credit card has between 13 and 16 digits, to do that all spaces are also removed 
+    const $cardIsValid = /^\d{13}\d?\d?\d?$/.test( $('#cc-num').val().replace(/\s+/g,'') ) ;
+    if( !$cardIsValid ) {
+        $('#cc-num').css('border-color','red');
+    }
+
+    //checks if zip field has 5 digits
+    const $zipIsValid = /^\d{5}$/.test( $('#zip').val() ); 
+    if( !$zipIsValid ) {
+        $('#zip').css('border-color','red');
+    }
+
+    //checks if cvv has 3 digits 
+    const $cvvIsValid = /^\d{3}$/.test( $('#cvv').val() );    
+    if( !$cvvIsValid ) {
+        $('#cvv').css('border-color','red');
+    }
+
+    //at least one activity is checked, that means that total price is different from zero
+    const $activityIsSelected = $totalPrice !== 0; 
+    if( !$activityIsSelected ) {
+        $('fieldset.activities legend').css('color','red');
+    }
+
+    const $formIsValid = $nameIsValid && $emailIsValid && $zipIsValid && $cvvIsValid && $cardIsValid && $activityIsSelected;
     if( !$formIsValid ) {
         event.preventDefault();
     }
 });
 
 
-// On submission, the form provides an error indication or message for each field that requires validation:
-// Name field
-// Email field
-// “Register for Activities” checkboxes
-// Credit Card number, Zip code, and CVV, only if the credit card payment method is selected.
+
 
 // Form provides at least one error message in real time, before the form is submitted. For example, the error message appears near the email field when the user begins to type, and disappears as soon as the user has entered a complete and correctly formatted email address.
 // Form provides at least one error message that changes depending on the error. For example, the email field displays a different error message when the email field is empty than it does when the email address is formatted incorrectly. *This is accomplished without the use of HTML5's built-in field validation.
