@@ -160,7 +160,6 @@ $bitCoinDiv.hide();
 //When a user chooses a payment option, the chosen payment section is revealed and the other payment sections are hidden.
 $('select#payment').on('change', function(){
     const $selectedOptionValue = $('select#payment option:selected').val();
-    
     //if credit card is selected the other payment divs need to be hidden
     if ($selectedOptionValue === 'credit card') {
         $creditCardDiv.show();
@@ -197,43 +196,36 @@ $('select#payment').on('change', function(){
 // “Register for Activities” checkboxes
 // Credit Card number, Zip code, and CVV, only if the credit card payment method is selected.
 $('form').on('submit', function (event) { 
-    
     //check if name field isn't blank
     const $nameIsValid = $('input#name').val(); 
     if( !$nameIsValid ) {
         $('input#name').css('border-color','red');
     }
-
     //email is valid
     const $emailIsValid = bestEmailRegex.test( $('#mail').val() ); 
     if( !$emailIsValid ) {
         $('#mail').css('border-color','red');
-    }
-        
+    }   
     //checks if credit card has between 13 and 16 digits, to do that all spaces are also removed 
     const $cardIsValid = /^\d{13}\d?\d?\d?$/.test( $('#cc-num').val().replace(/\s+/g,'') ) ;
     if( !$cardIsValid ) {
         $('#cc-num').css('border-color','red');
     }
-
     //checks if zip field has 5 digits
     const $zipIsValid = /^\d{5}$/.test( $('#zip').val() ); 
     if( !$zipIsValid ) {
         $('#zip').css('border-color','red');
     }
-
     //checks if cvv has 3 digits 
     const $cvvIsValid = /^\d{3}$/.test( $('#cvv').val() );    
     if( !$cvvIsValid ) {
         $('#cvv').css('border-color','red');
     }
-
     //at least one activity is checked, that means that total price is different from zero
     const $activityIsSelected = $totalPrice !== 0; 
     if( !$activityIsSelected ) {
         $('fieldset.activities legend').css('color','red');
     }
-
     const $formIsValid = $nameIsValid && $emailIsValid && $zipIsValid && $cvvIsValid && $cardIsValid && $activityIsSelected;
     if( !$formIsValid ) {
         event.preventDefault();
@@ -243,7 +235,11 @@ $('form').on('submit', function (event) {
 
 
 
-// Form provides at least one error message in real time, before the form is submitted. For example, the error message appears near the email field when the user begins to type, and disappears as soon as the user has entered a complete and correctly formatted email address.
-// Form provides at least one error message that changes depending on the error. For example, the email field displays a different error message when the email field is empty than it does when the email address is formatted incorrectly. *This is accomplished without the use of HTML5's built-in field validation.
+// Form provides at least one error message in real time, before the form is submitted. 
+// For example, the error message appears near the email field when the user begins to type, 
+// and disappears as soon as the user has entered a complete and correctly formatted email address.
 
-    
+// Form provides at least one error message that changes depending on the error. 
+// For example, the email field displays a different error message when the email field is empty 
+// than it does when the email address is formatted incorrectly. 
+// *This is accomplished without the use of HTML5's built-in field validation.
