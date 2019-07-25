@@ -204,7 +204,7 @@ option {
 ==================================== */
 
 .checkbox-disabled-label {
-	color: #c1c8d0;
+	color: lightslategray;
 }
 
 .js-validation-error {

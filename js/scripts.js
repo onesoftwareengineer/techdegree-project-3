@@ -2,6 +2,8 @@
 $( document ).ready(function() {
     //the cursor appears in the "Name" field, ready for a user to type.
     $('#name').focus();
+    //hides the other job role additional input field
+    $('#other').hide();
     //the color dropdown for the t-shirt is hidden
     $('#color').hide();
     //creates a span element with text "Please select a T-shirt theme"
@@ -11,28 +13,25 @@ $( document ).ready(function() {
     $('fieldset.activities').append('<h3 id="js-total-price"></h3>');
     // create all validation divs and hide them
     //name validation error div
-    $('label[for="name"]').append('<div id="js-name-error" class="js-validation-error"></div>');
-    $('#js-name-error').hide();
+    appendElement('label[for="name"]','js-name-error');
     //mail validation error div
-    $('label[for="mail"]').append('<div id="js-email-error" class="js-validation-error"></div>');
-    $('#js-email-error').hide();
+    appendElement('label[for="mail"]','js-email-error');
     // activity registration validation warning div
-    $('fieldset.activities legend').append('<div id="js-activity-error" class="js-validation-error"></div>');
-    $('#js-activity-error').hide();
+    appendElement('fieldset.activities legend','js-activity-error');
     //credit card number validation error div
-    $('label[for="cc-num"]').append('<div id="js-card-error" class="js-validation-error"></div>');
-    $('#js-card-error').hide();
+    appendElement('label[for="cc-num"]','js-card-error');
     //cvv validation error div
-    $('label[for="cvv"]').append('<div id="js-cvv-error" class="js-validation-error"></div>');
-    $('#js-cvv-error').hide();
+    appendElement('label[for="cvv"]','js-cvv-error');
     //zip validation error div
-    $('label[for="zip"]').append('<div id="js-zip-error" class="js-validation-error"></div>');
-    $('#js-zip-error').hide();
-    //whole form validation error div displayed above 
-    $('button[type="submit"]').after('<div id="js-submit-error" class="js-validation-error"></div>');
-    $('#js-submit-error').hide();
+    appendElement('label[for="zip"]','js-zip-error');
 });
 
+//function appendElement was created to create and hide error divs for validation
+//it is called with a parentSelector and appends the error div with the given name elementId
+function appendElement(parentSelector, elementId) {
+    $(parentSelector).append(`<div id="${elementId}" class="js-validation-error"></div>`);
+    $(elementId).hide();
+};
 
 //global variables declaration
 //totalPrice will store the total price the user needs to pay, it is initialized with zero on page load
@@ -44,21 +43,11 @@ const bestEmailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_
 //"Your job role" text field appears when user selects "Other" from the Job Role menu.
 $('select#title').on('change', function(){
     const $selectedRole = $('select#title option:selected').val();
-    const $otherInputExists = $("#other").length;
-    //if user selected other and the text input has not been created yet
-    if ( $selectedRole === 'other' && !$otherInputExists ) {
-        const $otherRole = `
-            <label for="other">Your job role</label>
-            <input type="text" id="other" name="user_other">
-            `;
-        $('#title').after($otherRole);
-    } 
-    //if user selected other and the text input has already been created
-    else if( $selectedRole === 'other' && $otherInputExists ) {
+    if ( $selectedRole === 'other' ) {
         $('#other').show();
-    }
-    //if user selected other job than other and other exists it will be hidden
-    else if( $selectedRole !== 'other' && $otherInputExists ) {
+    } 
+    //if user selected other job than other 
+    else if( $selectedRole !== 'other' ) {
         $('#other').hide();
     }
 });
@@ -223,12 +212,16 @@ $('form').on('submit', function (event) {
     const name = nameValidation();
     const email = mailValidation();
     const activity = activityValidation();
-    const card = cardValidation();
-    const cvv = cvvValidation();
-    const zip = zipValidation();
+    //for payment validation is being done only if credit card is selected, otherwise it will be considered valid
+    let payment = 1;
+    if( $('select#payment option:selected').val() === 'credit card' ) {
+        const card = cardValidation();
+        const cvv = cvvValidation();
+        const zip = zipValidation();
+        payment = card && cvv && zip;
+    }
     //if all validation function returned zero then prevent default behaviour of form submit
-    if( !(name && email && activity && card && cvv && zip) ) {
-        $('#js-submit-error').show().text('Fix errors marked with red above, then resubmit');
+    if( !(name && email && activity && payment) ) {
         event.preventDefault();
     }
 });
@@ -263,7 +256,7 @@ $('input#mail').on('input', mailValidation);
 function nameValidation() {
     const $nameIsValid = $('input#name').val(); 
     if( !$nameIsValid || $nameIsValid.length < 3) {
-        $('#js-name-error').show().text('Your full name needs to be entered');
+        $('#js-name-error').show().text('Your full name needs to be entered.');
         return 0;
     }
     else {
@@ -281,7 +274,7 @@ function activityValidation() {
     //at least one activity is checked, that means that total price is different from zero
     const $activityIsSelected = $totalPrice !== 0; 
     if( !$activityIsSelected ) {
-        $('#js-activity-error').show().html('<sub>One or more activities need to be selected</sub>');
+        $('#js-activity-error').show().html('<sub>One or more activities need to be selected.</sub>');
         return 0;
     }
     else {
