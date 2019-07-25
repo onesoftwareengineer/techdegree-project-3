@@ -22,6 +22,15 @@ $( document ).ready(function() {
     //credit card number validation error div
     $('label[for="cc-num"]').append('<div id="js-card-error" class="js-validation-error"></div>');
     $('#js-card-error').hide();
+    //cvv validation error div
+    $('label[for="cvv"]').append('<div id="js-cvv-error" class="js-validation-error"></div>');
+    $('#js-cvv-error').hide();
+    //zip validation error div
+    $('label[for="zip"]').append('<div id="js-zip-error" class="js-validation-error"></div>');
+    $('#js-zip-error').hide();
+    //whole form validation error div displayed above 
+    $('button[type="submit"]').after('<div id="js-submit-error" class="js-validation-error"></div>');
+    $('#js-submit-error').hide();
 });
 
 
@@ -159,6 +168,7 @@ $('fieldset[class="activities"]').on('change','input',function(){
     else if( $checkedActivityName === 'js-frameworks' ) {
         toggleCompatibleActivities(this.checked, 3, 5);
     }
+    activityValidation();
 });
 
 
@@ -209,28 +219,19 @@ $('select#payment').on('change', function(){
 // “Register for Activities” checkboxes
 // Credit Card number, Zip code, and CVV, only if the credit card payment method is selected.
 $('form').on('submit', function (event) { 
-
-
-    //checks if zip field has 5 digits
-    const $zipIsValid = /^\d{5}$/.test( $('#zip').val() ); 
-    if( !$zipIsValid ) {
-        $('#zip').css('border-color','red');
-    }
-    //checks if cvv has 3 digits 
-    const $cvvIsValid = /^\d{3}$/.test( $('#cvv').val() );    
-    if( !$cvvIsValid ) {
-        $('#cvv').css('border-color','red');
-    }
-
-
-    //to be repaired
-    const $formIsValid = nameValidation() && mailValidation();
-    console.log($formIsValid);
-    if( !$formIsValid ) {
+    //validation functions are triggered for name mail activities card cvv and zip fields and options
+    const name = nameValidation();
+    const email = mailValidation();
+    const activity = activityValidation();
+    const card = cardValidation();
+    const cvv = cvvValidation();
+    const zip = zipValidation();
+    //if all validation function returned zero then prevent default behaviour of form submit
+    if( !(name && email && activity && card && cvv && zip) ) {
+        $('#js-submit-error').show().text('Fix errors marked with red above, then resubmit');
         event.preventDefault();
     }
 });
-
 
 // function mailValidation 
 // Form provides messages that change depending on the error. 
@@ -251,13 +252,11 @@ function mailValidation() {
     }   
     else {
         $('#js-email-error').hide();
-        $('#mail').css('border-color','rgb(176, 211, 226)');
         return 1;
     }
 };
 //mail validation is called each time user adds text to email input field
 $('input#mail').on('input', mailValidation);
-
 
 //name validation returns 0 if name is not valid and 1 if name is valid
 //also when function is called it displays validation error
@@ -269,7 +268,6 @@ function nameValidation() {
     }
     else {
         $('#js-name-error').hide();
-        $('input#name').css('border-color','rgb(176, 211, 226)');
         return 1;
     }
 };
@@ -277,38 +275,60 @@ function nameValidation() {
 //Form provides error messages in real time, before the form is submitted. 
 $('input#name').on('input', nameValidation);
 
-
 // function activity is selected checks if the user has registered to at least one activity of the conference
 // function is called on form submit
 function activityValidation() {
     //at least one activity is checked, that means that total price is different from zero
     const $activityIsSelected = $totalPrice !== 0; 
     if( !$activityIsSelected ) {
-        $('fieldset.activities legend').css('color','red');
-        $('#js-activity-error').show().text('One or more activities need to be selected');
+        $('#js-activity-error').show().html('<sub>One or more activities need to be selected</sub>');
         return 0;
     }
     else {
         $('#js-activity-error').hide();
-        $('fieldset.activities legend').css('color','red');
         return 1;
     }
 };
-
-// function cvvIsValid ();
-
-// function zipIsValid ();
+//each time the user clicks on one of the select options activityValidation is run, the function is called with the activity configurator event handler farther above
 
 // credit card number validation
 // checks if credit card has between 13 and 16 digits, to do that all spaces are also removed
 function cardValidation () { 
     const $cardIsValid = /^\d{13}\d?\d?\d?$/.test( $('#cc-num').val().replace(/\s+/g,'') ) ;
     if( !$cardIsValid ) {
-        $('#cc-num').css('border-color','red');
-        $('#js-card-error').show().text('');
+        $('#js-card-error').show().text('Enter valid card number');
     }
     else {
         $('#js-card-error').hide();
     }
 };
+// card validation is done each time user inputs digits into card number field 
+$('#cc-num').on('input', cardValidation);
 
+// cvv validation
+function cvvValidation () { 
+    //checks if cvv has 3 digits 
+    const $cvvIsValid = /^\d{3}$/.test( $('#cvv').val() );    
+    if( !$cvvIsValid ) {
+        $('#js-cvv-error').show().text('Enter 3-digit cvv');
+    }
+    else {
+        $('#js-cvv-error').hide();
+    }
+};
+// cvv validation is done each time user inputs digits into card number field 
+$('#cvv').on('input', cvvValidation);
+
+// zip validation
+function zipValidation () { 
+    //checks if zip field has 5 digits
+    const $zipIsValid = /^\d{5}$/.test( $('#zip').val() ); 
+    if( !$zipIsValid ) {
+        $('#js-zip-error').show().text('Enter 5-digit zip');
+    }
+    else {
+        $('#js-zip-error').hide();
+    }
+};
+// card validation is done each time user inputs digits into card number field 
+$('#zip').on('input', zipValidation);
