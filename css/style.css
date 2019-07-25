@@ -128,10 +128,6 @@ option {
 	font-family: 'roboto', sans-serif;
 }
 
-.checkbox-disabled-label {
-	color: #c1c8d0;
-}
-
 /* ================================= 
   Page Styles
 ==================================== */
@@ -201,4 +197,16 @@ option {
 	label {
 		clear: both;
 	}
+}
+
+/* ================================= 
+  jQuery applied Styles
+==================================== */
+
+.checkbox-disabled-label {
+	color: #c1c8d0;
+}
+
+.js-validation-error {
+	color: red;
 }

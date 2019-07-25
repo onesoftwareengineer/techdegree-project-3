@@ -9,6 +9,19 @@ $( document ).ready(function() {
     $('#colors-js-puns').append($selectThemeText);
     //create total price element below activities
     $('fieldset.activities').append('<h3 id="js-total-price"></h3>');
+    // create all validation divs and hide them
+    //name validation error div
+    $('label[for="name"]').append('<div id="js-name-error" class="js-validation-error"></div>');
+    $('#js-name-error').hide();
+    //mail validation error div
+    $('label[for="mail"]').append('<div id="js-email-error" class="js-validation-error"></div>');
+    $('#js-email-error').hide();
+    // activity registration validation warning div
+    $('fieldset.activities legend').append('<div id="js-activity-error" class="js-validation-error"></div>');
+    $('#js-activity-error').hide();
+    //credit card number validation error div
+    $('label[for="cc-num"]').append('<div id="js-card-error" class="js-validation-error"></div>');
+    $('#js-card-error').hide();
 });
 
 
@@ -196,21 +209,8 @@ $('select#payment').on('change', function(){
 // “Register for Activities” checkboxes
 // Credit Card number, Zip code, and CVV, only if the credit card payment method is selected.
 $('form').on('submit', function (event) { 
-    //check if name field isn't blank
-    const $nameIsValid = $('input#name').val(); 
-    if( !$nameIsValid ) {
-        $('input#name').css('border-color','red');
-    }
-    //email is valid
-    const $emailIsValid = bestEmailRegex.test( $('#mail').val() ); 
-    if( !$emailIsValid ) {
-        $('#mail').css('border-color','red');
-    }   
-    //checks if credit card has between 13 and 16 digits, to do that all spaces are also removed 
-    const $cardIsValid = /^\d{13}\d?\d?\d?$/.test( $('#cc-num').val().replace(/\s+/g,'') ) ;
-    if( !$cardIsValid ) {
-        $('#cc-num').css('border-color','red');
-    }
+
+
     //checks if zip field has 5 digits
     const $zipIsValid = /^\d{5}$/.test( $('#zip').val() ); 
     if( !$zipIsValid ) {
@@ -221,25 +221,94 @@ $('form').on('submit', function (event) {
     if( !$cvvIsValid ) {
         $('#cvv').css('border-color','red');
     }
-    //at least one activity is checked, that means that total price is different from zero
-    const $activityIsSelected = $totalPrice !== 0; 
-    if( !$activityIsSelected ) {
-        $('fieldset.activities legend').css('color','red');
-    }
-    const $formIsValid = $nameIsValid && $emailIsValid && $zipIsValid && $cvvIsValid && $cardIsValid && $activityIsSelected;
+
+
+    //to be repaired
+    const $formIsValid = nameValidation() && mailValidation();
+    console.log($formIsValid);
     if( !$formIsValid ) {
         event.preventDefault();
     }
 });
 
 
-
-
-// Form provides at least one error message in real time, before the form is submitted. 
-// For example, the error message appears near the email field when the user begins to type, 
-// and disappears as soon as the user has entered a complete and correctly formatted email address.
-
-// Form provides at least one error message that changes depending on the error. 
+// function mailValidation 
+// Form provides messages that change depending on the error. 
 // For example, the email field displays a different error message when the email field is empty 
 // than it does when the email address is formatted incorrectly. 
 // *This is accomplished without the use of HTML5's built-in field validation.
+// the error message appears near the email field when the user begins to type, 
+// and disappears as soon as the user has entered a complete and correctly formatted email address.
+function mailValidation() {
+    const $emailIsValid = bestEmailRegex.test( $('#mail').val() ); 
+    if( !$('#mail').val() ) {
+        $('#js-email-error').show().text('Field empty. Please enter your email.');
+        return 0;
+    } 
+    else if( !$emailIsValid ) {
+        $('#js-email-error').show().text('Enter a valid email address.');
+        return 0;
+    }   
+    else {
+        $('#js-email-error').hide();
+        $('#mail').css('border-color','rgb(176, 211, 226)');
+        return 1;
+    }
+};
+//mail validation is called each time user adds text to email input field
+$('input#mail').on('input', mailValidation);
+
+
+//name validation returns 0 if name is not valid and 1 if name is valid
+//also when function is called it displays validation error
+function nameValidation() {
+    const $nameIsValid = $('input#name').val(); 
+    if( !$nameIsValid || $nameIsValid.length < 3) {
+        $('#js-name-error').show().text('Your full name needs to be entered');
+        return 0;
+    }
+    else {
+        $('#js-name-error').hide();
+        $('input#name').css('border-color','rgb(176, 211, 226)');
+        return 1;
+    }
+};
+//namevalidation function is called each time the user adds text to the name field
+//Form provides error messages in real time, before the form is submitted. 
+$('input#name').on('input', nameValidation);
+
+
+// function activity is selected checks if the user has registered to at least one activity of the conference
+// function is called on form submit
+function activityValidation() {
+    //at least one activity is checked, that means that total price is different from zero
+    const $activityIsSelected = $totalPrice !== 0; 
+    if( !$activityIsSelected ) {
+        $('fieldset.activities legend').css('color','red');
+        $('#js-activity-error').show().text('One or more activities need to be selected');
+        return 0;
+    }
+    else {
+        $('#js-activity-error').hide();
+        $('fieldset.activities legend').css('color','red');
+        return 1;
+    }
+};
+
+// function cvvIsValid ();
+
+// function zipIsValid ();
+
+// credit card number validation
+// checks if credit card has between 13 and 16 digits, to do that all spaces are also removed
+function cardValidation () { 
+    const $cardIsValid = /^\d{13}\d?\d?\d?$/.test( $('#cc-num').val().replace(/\s+/g,'') ) ;
+    if( !$cardIsValid ) {
+        $('#cc-num').css('border-color','red');
+        $('#js-card-error').show().text('');
+    }
+    else {
+        $('#js-card-error').hide();
+    }
+};
+
