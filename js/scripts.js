@@ -36,8 +36,6 @@ function appendElement(parentSelector, elementId) {
 //global variables declaration
 //totalPrice will store the total price the user needs to pay, it is initialized with zero on page load
 let $totalPrice = 0;
-//best email regex taken from https://emailregex.com/
-const bestEmailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 
 //"Your job role" text field appears when user selects "Other" from the Job Role menu.
@@ -234,7 +232,7 @@ $('form').on('submit', function (event) {
 // the error message appears near the email field when the user begins to type, 
 // and disappears as soon as the user has entered a complete and correctly formatted email address.
 function mailValidation() {
-    const $emailIsValid = bestEmailRegex.test( $('#mail').val() ); 
+    const $emailIsValid = /^[a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$/.test( $('#mail').val() ); 
     if( !$('#mail').val() ) {
         $('#js-email-error').show().text('Field empty. Please enter your email.');
         return 0;
