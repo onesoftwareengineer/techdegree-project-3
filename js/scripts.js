@@ -109,51 +109,37 @@ $('fieldset[class="activities"]').on('change','input',function(){
         $('#js-total-price').text('');
     }  
     //function to toggle availability of activities that happen at the same time
-    function toggleCompatibleActivities(isChecked,x,y) {
+    function toggleCompatibleActivities(isChecked,x) {
         if(isChecked) {
             $activitiesCheckBoxes.eq(x).
                 attr('disabled', 'true')
                 .parent().
                 addClass('checkbox-disabled-label');
-            $activitiesCheckBoxes.eq(y)
-                .attr('disabled', 'true')
-                .parent()
-                .addClass('checkbox-disabled-label');
         }
         else {
             $activitiesCheckBoxes.eq(x)
                 .removeAttr('disabled')
                 .parent()
                 .removeClass('checkbox-disabled-label');
-            $activitiesCheckBoxes.eq(y)
-                .removeAttr('disabled')
-                .parent()
-                .removeClass('checkbox-disabled-label');
         }
     }
     // the following activities happen at the same time so exclude each other
-    // js-frameworks - index 1 / express - index 3 / build-tools - index 5
-    // js-libs - index 2 / node - index 4 / npm - index 6
+    // js-frameworks - index 1 / express - index 3 
+    // js-libs - index 2 / node - index 4 
     if( $checkedActivityName === 'js-frameworks' ) {
-        toggleCompatibleActivities(this.checked, 3, 5);
+        toggleCompatibleActivities(this.checked, 3);
     }
     else if( $checkedActivityName === 'express' ) {
-        toggleCompatibleActivities(this.checked, 1, 5);
-    }
-    else if( $checkedActivityName === 'build-tools' ) {
-        toggleCompatibleActivities(this.checked, 1, 3);
+        toggleCompatibleActivities(this.checked, 1);
     }
     else if( $checkedActivityName === 'js-libs' ) {
-        toggleCompatibleActivities(this.checked, 4, 6);
+        toggleCompatibleActivities(this.checked, 4);
     }
     else if( $checkedActivityName === 'node' ) {
-        toggleCompatibleActivities(this.checked, 2, 6);
-    }
-    else if( $checkedActivityName === 'npm' ) {
-        toggleCompatibleActivities(this.checked, 2, 4);
+        toggleCompatibleActivities(this.checked, 2);
     }
     else if( $checkedActivityName === 'js-frameworks' ) {
-        toggleCompatibleActivities(this.checked, 3, 5);
+        toggleCompatibleActivities(this.checked, 3);
     }
     activityValidation();
 });
